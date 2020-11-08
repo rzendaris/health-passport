@@ -23,12 +23,7 @@ class SpreadZoneController extends Controller
             'lat' => 'required',
             'long' => 'required'
         ]);
-        $spreadzones = DB::table('spreadzone')
-            ->select(DB::raw("
-                id, name, latitude, longitude, radius,
-                ( 6371 * acos( cos( radians(latitude) ) * cos( radians( $request->lat ) ) * cos( radians( $request->long ) - radians(longitude) ) + sin( radians(latitude) ) * sin( radians( $request->lat ) ) ) ) AS distance
-            "))
-            ->get();
+        $spreadzones = DB::select('CALL GetSpreadZone("'.$request->lat.'","'.$request->long.'")');
         
         $spreadzone_filter = array();
         foreach($spreadzones as $spreadzone){
@@ -45,12 +40,7 @@ class SpreadZoneController extends Controller
             'lat' => 'required',
             'long' => 'required'
         ]);
-        $spreadzones = DB::table('mst_data')
-            ->select(DB::raw("
-                id, name, latitude, longitude,
-                ( 6371 * acos( cos( radians(latitude) ) * cos( radians( $request->lat ) ) * cos( radians( $request->long ) - radians(longitude) ) + sin( radians(latitude) ) * sin( radians( $request->lat ) ) ) ) AS distance
-            "))
-            ->get();
+        $spreadzones = DB::select('CALL GetInfraByZone("'.$request->lat.'","'.$request->long.'")');
         
         $spreadzone_filter = array();
         foreach($spreadzones as $spreadzone){
