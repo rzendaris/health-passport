@@ -27,11 +27,13 @@ class AppsController extends Controller
 
     public function GetInfraList(Request $request)
     {
-        $mst_data = MstData::where('status', 1);
-        if (isset($request->search)){
-            $mst_data = $mst_data->where('name', 'LIKE', "%{$request->search}%");
-        }
-        $responses = $mst_data->get();
+        // $mst_data = MstData::where('status', 1);
+        $request->validate([
+            'lat' => 'required',
+            'long' => 'required'
+        ]);
+        $mst_data = DB::select('CALL GetInfraByZone("'.$request->lat.'","'.$request->long.'","'.$request->search.'")');
+        $responses = $mst_data;
         foreach($responses as $response){
             $category = MstCategories::select('name')->where('id', $response->id)->first();
             $response->category_name = $category->name;
@@ -41,6 +43,10 @@ class AppsController extends Controller
 
     public function GetInfraListRecommendation(Request $request)
     {
+        $request->validate([
+            'lat' => 'required',
+            'long' => 'required'
+        ]);
         $certificates = InfraCertificate::select('infra_id', DB::raw('count(*) as total'))
                         ->groupBy('infra_id')
                         ->get();
@@ -48,35 +54,62 @@ class AppsController extends Controller
         foreach($certificates as $certificate){
             array_push($infra_id, $certificate->infra_id);
         }
-        $mst_data = MstData::whereIn('id', $infra_id)->where('status', 1);
-        if (isset($request->search)){
-            $mst_data = $mst_data->where('name', 'LIKE', "%{$request->search}%");
-        }
-        $responses = $mst_data->get();
+        $temp_data = array();
+        $mst_data = DB::select('CALL GetInfraByZone("'.$request->lat.'","'.$request->long.'","'.$request->search.'")');
+        $responses = $mst_data;
         foreach($responses as $response){
             $category = MstCategories::select('name')->where('id', $response->id)->first();
             foreach($certificates as $certificate){
                 if($response->id == $certificate->infra_id){
                     $response->total_certificate = $certificate->total;
+                    $response->category_name = $category->name;
+                    array_push($temp_data, $response);
                 }
             }
-            $response->category_name = $category->name;
         }
-        return $this->appResponse(100, 200, $responses->sortBy('total_certificate', SORT_REGULAR, true));
+        
+        usort($temp_data, $this->arrSortObjsByKey('total_certificate'));
+        return $this->appResponse(100, 200, $temp_data);
     }
 
     public function GetListByCategoryId($category_id, Request $request)
     {
-        $mst_data = MstData::where('category_id', $category_id)->where('status', 1);
-        if (isset($request->search)){
-            $mst_data = $mst_data->where('name', 'LIKE', "%{$request->search}%");
+        $request->validate([
+            'lat' => 'required',
+            'long' => 'required'
+        ]);
+        $certificates = InfraCertificate::select('infra_id', DB::raw('count(*) as total'))
+                        ->groupBy('infra_id')
+                        ->get();
+        $infra_id = array();
+        foreach($certificates as $certificate){
+            array_push($infra_id, $certificate->infra_id);
         }
-        $responses = $mst_data->get();
+        $temp_data = array();
+        $mst_data = DB::select('CALL GetInfraByZone("'.$request->lat.'","'.$request->long.'","'.$request->search.'")');
+        $responses = $mst_data;
         foreach($responses as $response){
-            $category = MstCategories::select('name')->where('id', $response->id)->first();
-            $response->category_name = $category->name;
+            if((int)$response->category_id == $category_id){
+                $category = MstCategories::select('name')->where('id', $response->category_id)->first();
+                foreach($certificates as $certificate){
+                    if($response->id == $certificate->infra_id){
+                        $response->total_certificate = $certificate->total;
+                        $response->category_name = $category->name;
+                        array_push($temp_data, $response);
+                    }
+                }
+            }
         }
-        return $this->appResponse(100, 200, $responses);
+        if (isset($request->sort_by)){
+
+            if($request->sort_by == 'REKOMENDASI'){
+                usort($temp_data, $this->arrSortObjsByKey('total_certificate'));
+            }
+            if($request->sort_by == 'TERDEKAT'){
+                usort($temp_data, $this->arrSortObjsByKey('distance', 'ASC'));
+            }
+        }
+        return $this->appResponse(100, 200, $temp_data);
     }
 
     protected function searchEngine($request){
@@ -101,5 +134,22 @@ class AppsController extends Controller
 
         $return = $apps->get();
         return $return;
+    }
+
+    private function arrSortObjsByKey($key, $order = 'DESC') {
+        return function($a, $b) use ($key, $order) {
+    
+            // Swap order if necessary
+            if ($order == 'DESC') {
+                    list($a, $b) = array($b, $a);
+             } 
+    
+             // Check data type
+             if (is_numeric($a->$key)) {
+                 return $a->$key - $b->$key; // compare numeric
+             } else {
+                 return strnatcasecmp($a->$key, $b->$key); // compare string
+             }
+        };
     }
 }

@@ -27,9 +27,10 @@ class SpreadZoneController extends Controller
         
         $spreadzone_filter = array();
         foreach($spreadzones as $spreadzone){
-            if($spreadzone->distance < 10){
-                array_push($spreadzone_filter, $spreadzone);
-            }
+            // if($spreadzone->distance < 10){
+            //     array_push($spreadzone_filter, $spreadzone);
+            // }
+            array_push($spreadzone_filter, $spreadzone);
         }
         return $this->appResponse(100, 200, $spreadzone_filter);
     }
@@ -40,13 +41,16 @@ class SpreadZoneController extends Controller
             'lat' => 'required',
             'long' => 'required'
         ]);
-        $spreadzones = DB::select('CALL GetInfraByZone("'.$request->lat.'","'.$request->long.'")');
+        $spreadzones = DB::select('CALL GetInfraByZone("'.$request->lat.'","'.$request->long.'","'.$request->search.'")');
         
         $spreadzone_filter = array();
         foreach($spreadzones as $spreadzone){
-            if($spreadzone->distance < 10){
-                array_push($spreadzone_filter, $spreadzone);
-            }
+            $category = MstCategories::select('name')->where('id', $spreadzone->id)->first();
+            $spreadzone->category_name = $category->name;
+            // if($spreadzone->distance < 10){
+            //     array_push($spreadzone_filter, $spreadzone);
+            // }
+            array_push($spreadzone_filter, $spreadzone);
         }
         return $this->appResponse(100, 200, $spreadzone_filter);
     }

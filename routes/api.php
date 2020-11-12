@@ -32,9 +32,9 @@ Route::group(['prefix' => 'v1'], function () {
             /**
              * List Data
              */
-            Route::get('infra-list', 'API\v1\AppsController@GetInfraList');
-            Route::get('infra-list-recommendation', 'API\v1\AppsController@GetInfraListRecommendation');
-            Route::get('infra-list-by-category/{category_id}', 'API\v1\AppsController@GetListByCategoryId');
+            Route::post('infra-list', 'API\v1\AppsController@GetInfraList');
+            Route::post('infra-list-recommendation', 'API\v1\AppsController@GetInfraListRecommendation');
+            Route::post('infra-list-by-category/{category_id}', 'API\v1\AppsController@GetListByCategoryId');
 
             Route::post('spreadzone', 'API\v1\SpreadZoneController@index');
             Route::post('spreadzone/infra-list', 'API\v1\SpreadZoneController@spreadZoneInfraInfo');

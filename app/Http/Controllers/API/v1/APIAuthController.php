@@ -33,6 +33,9 @@ class APIAuthController extends Controller
             'password' => 'required|string',
             'birthday' => 'required|date_format:Y-m-d',
             'photo' => 'mimes:jpeg,jpg,png|max:10000',
+            'gender' => 'required|string',
+            'nik' => 'string',
+            'address' => 'string',
             'firebase_id' => 'string',
         ]);
         $check_user = User::where('email', $request->email)->first();
@@ -50,7 +53,10 @@ class APIAuthController extends Controller
                 'email' => $request->email,
                 'role_id' => 3,
                 'password' => bcrypt($request->password),
-                'eu_birthday' => $request->birthday,
+                'birthday' => $request->birthday,
+                'gender' => $request->gender,
+                'nik' => $request->nik,
+                'address' => $request->address,
                 'is_blocked' => 1,
                 'is_verified' => 1,
                 'picture' => $file_name,
