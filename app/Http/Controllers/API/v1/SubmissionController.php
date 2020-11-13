@@ -20,7 +20,7 @@ class SubmissionController extends Controller
 {
 
     public function index(Request $request){
-        $submission = Submission::where('user_id', $request->user_id)->get();
+        $submission = Submission::where('user_id', $request->user_id)->orderBy('id', 'desc')->get();
         return $this->appResponse(100, 200, $this->compileQrCode($submission));
     }
 
@@ -33,6 +33,9 @@ class SubmissionController extends Controller
             return $this->appResponse(104, 200);
         } else {
             $submission->qr_code = 'qr-code/'.$submission->id.'.png';
+            $submission->document = 'document/'.$submission->document;
+            $submission->user = User::select('name', 'picture', 'gender', 'nik', 'birthday', 'phone_number')->where('id', $submission->user_id)->first();
+            $submission->user->age = $this->get_age($submission->user->birthday);
             return $this->appResponse(100, 200, $submission);
         }
     }
@@ -43,7 +46,8 @@ class SubmissionController extends Controller
             'test_type' => 'required|string',
             'test_location' => 'required|string',
             'city' => 'required|string',
-            'date' => 'required|date'
+            'date' => 'required|date',
+            'document' => 'required|mimes:jpeg,jpg,png|max:10000',
         ]);
 
         $submission = new Submission([
@@ -52,20 +56,64 @@ class SubmissionController extends Controller
             'test_location' => $request->test_location,
             'city' => $request->city,
             'date' => $request->date,
-            'identifier_id' => Str::uuid()
+            'identifier_id' => Str::uuid(),
+            'status' => 'Not Verified',
+            'exp_date' => Carbon::createFromFormat('Y-m-d', $request->date)->addDays(5)
         ]);
         $submission->save();
+
+        $file_name = "Document doesn't exist";
+        if($request->document){
+            $file_extention = $request->document->getClientOriginalExtension();
+            $file_name = $submission->id.'-document.'.$file_extention;
+            $file_path = $request->document->move($this->MapPublicPath().'document',$file_name);
+            Submission::where('id', $submission->id)->update([
+                'document' => $file_name
+            ]);
+        }
         QrCode::format('png')->size(250)->generate((string)$submission->identifier_id, $this->MapPublicPath().'qr-code/'.$submission->id.'.png');
 
-        $submission->qr_code = 'qr-code/'.$submission->id.'.png';
-        return $this->appResponse(100, 200, $submission);
+        $submission_return = Submission::where('id', $submission->id)->first();
+        $submission_return->qr_code = 'qr-code/'.$submission_return->id.'.png';
+        $submission_return->document = 'document/'.$submission_return->document;
+        return $this->appResponse(100, 200, $submission_return);
     }
 
     private function compileQrCode($submissions){
         foreach($submissions as $submission){
             $submission->qr_code = 'qr-code/'.$submission->id.'.png';
+            $submission->document = 'document/'.$submission->document;
+            $submission->user = User::select('name', 'picture', 'gender', 'nik', 'birthday', 'phone_number')->where('id', $submission->user_id)->first();
+            $submission->user->age = $this->get_age($submission->user->birthday);
         }
 
         return $submissions;
+    }
+
+    private function get_age($date, $units='years')
+    {
+        $modifier = date('n') - date('n', strtotime($date)) ? 1 : (date('j') - date('j', strtotime($date)) ? 1 : 0);
+        $seconds = (time()-strtotime($date));
+        $years = (date('Y')-date('Y', strtotime($date))-$modifier);
+        switch($units)
+        {
+            case 'seconds':
+                return $seconds;
+            case 'minutes':
+                return round($seconds/60);
+            case 'hours':
+                return round($seconds/60/60);
+            case 'days':
+                return round($seconds/60/60/24);
+            case 'months':
+                return ($years*12+date('n'));
+            case 'decades':
+                return ($years/10);
+            case 'centuries':
+                return ($years/100);
+            case 'years':
+            default:
+                return $years;
+        }
     }
 }

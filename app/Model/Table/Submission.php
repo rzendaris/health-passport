@@ -17,6 +17,8 @@ class Submission extends Model
       'test_location',
       'city',
       'date',
+      'exp_date',
+      'document',
       'identifier_id',
       'status'
   ];
