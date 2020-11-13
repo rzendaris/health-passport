@@ -12,7 +12,6 @@
         "anhskohbo/no-captcha": "^3.2",
         "awobaz/compoships": "^1.1",
         "captcha-com/laravel-captcha": "^4.2",
-        "farhanwazir/laravelgooglemaps": "^2.3",
         "fideloper/proxy": "^4.0",
         "firebase/php-jwt": "^5.0",
         "intervention/image": "^2.5",
@@ -20,6 +19,7 @@
         "laravel/tinker": "^1.0",
         "maatwebsite/excel": "^3.1",
         "phpoffice/phpexcel": "^1.8",
+        "simplesoftwareio/simple-qrcode": "~2",
         "tufanbarisyildirim/php-apk-parser": "^2.0"
     },
     "require-dev": {

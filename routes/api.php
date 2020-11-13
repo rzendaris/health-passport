@@ -35,9 +35,14 @@ Route::group(['prefix' => 'v1'], function () {
             Route::post('infra-list', 'API\v1\AppsController@GetInfraList');
             Route::post('infra-list-recommendation', 'API\v1\AppsController@GetInfraListRecommendation');
             Route::post('infra-list-by-category/{category_id}', 'API\v1\AppsController@GetListByCategoryId');
+            Route::post('infra-list-by-id/{infra_id}', 'API\v1\AppsController@GetInfraListById');
 
             Route::post('spreadzone', 'API\v1\SpreadZoneController@index');
             Route::post('spreadzone/infra-list', 'API\v1\SpreadZoneController@spreadZoneInfraInfo');
+
+            Route::get('submission', 'API\v1\SubmissionController@index');
+            Route::post('submission', 'API\v1\SubmissionController@createSubmission');
+            Route::post('scan-qr-submission', 'API\v1\SubmissionController@scanSubmission');
 
             /**
              * Ads Management

@@ -41,6 +41,29 @@ class AppsController extends Controller
         return $this->appResponse(100, 200, $responses);
     }
 
+    public function GetInfraListById($infra_id, Request $request)
+    {
+        // $mst_data = MstData::where('status', 1);
+        $request->validate([
+            'lat' => 'required',
+            'long' => 'required'
+        ]);
+        $mst_data = DB::select('CALL GetInfraByZone("'.$request->lat.'","'.$request->long.'","'.$request->search.'")');
+        $return_response = array();
+        foreach($mst_data as $response){
+            if($response->id == $infra_id){
+                $category = MstCategories::select('name')->where('id', $response->id)->first();
+                $response->category_name = $category->name;
+                array_push($return_response, $response);
+            }
+        }
+        if(empty($return_response)){
+            return $this->appResponse(104, 200);
+        } else {
+            return $this->appResponse(100, 200, $return_response[0]);
+        }
+    }
+
     public function GetInfraListRecommendation(Request $request)
     {
         $request->validate([
