@@ -50,6 +50,15 @@ class SpreadZoneController extends Controller
             // if($spreadzone->distance < 10){
             //     array_push($spreadzone_filter, $spreadzone);
             // }
+            $spreadzone->spreadzone_status = 'GREEN_ZONE';
+            $spreadzone->images = json_decode($spreadzone->images);
+            
+            $spreadzones_infra = DB::select('CALL GetSpreadZone("'.$spreadzone->latitude.'","'.$spreadzone->longitude.'")');
+            foreach($spreadzones_infra as $spreadzone_infra){
+                if($spreadzone_infra->radius > $spreadzone_infra->distance){
+                    $spreadzone->spreadzone_status = 'RED_ZONE';
+                }
+            }
             array_push($spreadzone_filter, $spreadzone);
         }
         return $this->appResponse(100, 200, $spreadzone_filter);

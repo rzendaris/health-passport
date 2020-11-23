@@ -37,6 +37,16 @@ class AppsController extends Controller
         foreach($responses as $response){
             $category = MstCategories::select('name')->where('id', $response->id)->first();
             $response->category_name = $category->name;
+            $response->icon = 'infra/'.$response->icon;
+            $response->spreadzone_status = 'GREEN_ZONE';
+            $response->images = json_decode($response->images);
+
+            $spreadzones = DB::select('CALL GetSpreadZone("'.$response->latitude.'","'.$response->longitude.'")');
+            foreach($spreadzones as $spreadzone){
+                if($spreadzone->radius > $spreadzone->distance){
+                    $response->spreadzone_status = 'RED_ZONE';
+                }
+            }
         }
         return $this->appResponse(100, 200, $responses);
     }
@@ -54,6 +64,18 @@ class AppsController extends Controller
             if($response->id == $infra_id){
                 $category = MstCategories::select('name')->where('id', $response->id)->first();
                 $response->category_name = $category->name;
+                $response->images = json_decode($response->images);
+                $response->icon = 'infra/'.$response->icon;
+                $response->spreadzone_status = 'GREEN_ZONE';
+                $response->aries_status = 'PASSED';
+                $response->disinfectant_status = 'NOT_PASSED';
+
+                $spreadzones = DB::select('CALL GetSpreadZone("'.$response->latitude.'","'.$response->longitude.'")');
+                foreach($spreadzones as $spreadzone){
+                    if($spreadzone->radius > $spreadzone->distance){
+                        $response->spreadzone_status = 'RED_ZONE';
+                    }
+                }
                 array_push($return_response, $response);
             }
         }
@@ -86,6 +108,16 @@ class AppsController extends Controller
                 if($response->id == $certificate->infra_id){
                     $response->total_certificate = $certificate->total;
                     $response->category_name = $category->name;
+                    $response->icon = 'infra/'.$response->icon;
+                    $response->spreadzone_status = 'GREEN_ZONE';
+                    $response->images = json_decode($response->images);
+        
+                    $spreadzones = DB::select('CALL GetSpreadZone("'.$response->latitude.'","'.$response->longitude.'")');
+                    foreach($spreadzones as $spreadzone){
+                        if($spreadzone->radius > $spreadzone->distance){
+                            $response->spreadzone_status = 'RED_ZONE';
+                        }
+                    }
                     array_push($temp_data, $response);
                 }
             }
@@ -114,13 +146,25 @@ class AppsController extends Controller
         foreach($responses as $response){
             if((int)$response->category_id == $category_id){
                 $category = MstCategories::select('name')->where('id', $response->category_id)->first();
+                $response->total_certificate = 0;
                 foreach($certificates as $certificate){
                     if($response->id == $certificate->infra_id){
                         $response->total_certificate = $certificate->total;
-                        $response->category_name = $category->name;
-                        array_push($temp_data, $response);
                     }
                 }
+                $response->category_name = $category->name;
+                $response->icon = 'infra/'.$response->icon;
+                $response->spreadzone_status = 'GREEN_ZONE';
+                $response->images = json_decode($response->images);
+    
+                $spreadzones = DB::select('CALL GetSpreadZone("'.$response->latitude.'","'.$response->longitude.'")');
+                foreach($spreadzones as $spreadzone){
+                    if($spreadzone->radius > $spreadzone->distance){
+                        $response->spreadzone_status = 'RED_ZONE';
+                    }
+                }
+
+                array_push($temp_data, $response);
             }
         }
         if (isset($request->sort_by)){

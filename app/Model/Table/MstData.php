@@ -16,6 +16,13 @@ class MstData extends Model
       'icon',
       'latitude',
       'longitude',
-      'category_id'
+      'category_id',
+      'city',
+      'province',
+      'address',
+      'facility',
+      'rating',
+      'description',
+      'images'
   ];
 }

@@ -28,6 +28,8 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group(['middleware' => 'auth.api'], function() {
             Route::get('logout', 'API\v1\APIAuthController@logout');
             Route::get('profile', 'API\v1\APIAuthController@user');
+            Route::post('profile/complete', 'API\v1\APIAuthController@completeProfile');
+            Route::post('update-profile', 'API\v1\APIAuthController@updateProfile');
             Route::get('category', 'API\v1\AppsController@GetAppsCategory');
             /**
              * List Data

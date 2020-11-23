@@ -36,6 +36,11 @@ class SubmissionController extends Controller
             $submission->document = 'document/'.$submission->document;
             $submission->user = User::select('name', 'picture', 'gender', 'nik', 'birthday', 'phone_number')->where('id', $submission->user_id)->first();
             $submission->user->age = $this->get_age($submission->user->birthday);
+            $dt = Carbon::now();
+            $submission->is_expired = FALSE;
+            if(strtotime($submission->exp_date) < strtotime($dt->toDateString())){
+                $submission->is_expired = TRUE;
+            }
             return $this->appResponse(100, 200, $submission);
         }
     }
@@ -58,7 +63,7 @@ class SubmissionController extends Controller
             'date' => $request->date,
             'identifier_id' => Str::uuid(),
             'status' => 'Not Verified',
-            'exp_date' => Carbon::createFromFormat('Y-m-d', $request->date)->addDays(5)
+            'exp_date' => Carbon::createFromFormat('Y-m-d', $request->date)->addDays(14)
         ]);
         $submission->save();
 
@@ -85,6 +90,11 @@ class SubmissionController extends Controller
             $submission->document = 'document/'.$submission->document;
             $submission->user = User::select('name', 'picture', 'gender', 'nik', 'birthday', 'phone_number')->where('id', $submission->user_id)->first();
             $submission->user->age = $this->get_age($submission->user->birthday);
+            $dt = Carbon::now();
+            $submission->is_expired = FALSE;
+            if(strtotime($submission->exp_date) < strtotime($dt->toDateString())){
+                $submission->is_expired = TRUE;
+            }
         }
 
         return $submissions;

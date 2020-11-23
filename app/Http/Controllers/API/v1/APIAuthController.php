@@ -170,24 +170,58 @@ class APIAuthController extends Controller
      */
     public function updateProfile(Request $request){
         $request->validate([
-            'email' => 'required|string|email',
-            'birthday' => 'required|date_format:Y-m-d',
+            'name' => 'string',
+            'email' => 'string|email',
+            'birthday' => 'date_format:Y-m-d',
             'photo' => 'mimes:jpeg,jpg,png|max:10000',
+            'gender' => 'string',
+            'nik' => 'string',
+            'address' => 'string',
+            'firebase_id' => 'string',
         ]);
-        $check_user = User::where('email', $request->email)->first();
+        $check_user = User::where('id', $request->user_id)->first();
         if ($check_user){
             $file_name = $check_user->picture;
             if($request->photo){
                 $file_extention = $request->photo->getClientOriginalExtension();
-                $file_name = $request->email.'image_profile.'.$file_extention;
+                $file_name = $check_user->email.'image_profile.'.$file_extention;
                 $file_path = $request->photo->move($this->MapPublicPath().'pictures',$file_name);
             }
             User::where('id', $check_user->id)->update([
                 'name' => $request->name,
-                'eu_birthday' => $request->birthday,
-                'picture' => $file_name
+                'role_id' => 3,
+                'birthday' => $request->birthday,
+                'gender' => $request->gender,
+                'nik' => $request->nik,
+                'address' => $request->address,
+                'is_blocked' => 1,
+                'is_verified' => 1,
+                'picture' => $file_name,
+                'notification_id' => $request->firebase_id
             ]);
-            return $this->appResponse(501, 200);
+            $return_data = User::where('id', $check_user->id)->first();
+            return $this->appResponse(501, 200, $return_data);
+        } else {
+            return $this->appResponse(156, 200);
+        }
+    }
+
+    /**
+     * Update Profile
+     */
+    public function completeProfile(Request $request){
+        $request->validate([
+            'nik' => 'string',
+            'address' => 'string'
+        ]);
+        $check_user = User::where('id', $request->user_id)->first();
+        if ($check_user){
+            User::where('id', $check_user->id)->update([
+                'nik' => $request->nik,
+                'address' => $request->address
+            ]);
+            $return_data = User::where('id', $check_user->id)->first();
+            return $this->appResponse(501, 200, $return_data);
         } else {
             return $this->appResponse(156, 200);
         }
