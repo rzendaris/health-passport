@@ -236,9 +236,9 @@ class Controller extends BaseController
         $err = curl_error($curl);
         curl_close($curl);
         if ($err) {
-            return FALSE;
+            return $response;
         } else {
-            return TRUE;
+            return $response;
         }
     }
 }

@@ -14,6 +14,7 @@ class InfraCertificate extends Model
       'id',
       'name',
       'license_no',
-      'infra_id'
+      'infra_id',
+      'status'
   ];
 }

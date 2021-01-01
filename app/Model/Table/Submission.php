@@ -17,6 +17,8 @@ class Submission extends Model
       'test_location',
       'city',
       'date',
+      'body_temperature',
+      'destination',
       'exp_date',
       'document',
       'identifier_id',

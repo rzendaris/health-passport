@@ -1,0 +1,181 @@
+/* here you can put your own css to customize and override the theme */
+
+/* User Management Page */
+/* =========================== */
+.content-body-white {
+    background: #fff;
+    padding: 15px 20px;
+}
+.toolbar {
+    float: right;
+}
+div.dataTables_wrapper div.dataTables_filter {
+    text-align: left;
+}
+#sorting-table_filter {
+    float: left;
+}
+.dataTables_wrapper .dataTables_filter input {
+    margin-left: 0!important;
+    padding: 6.5px 10px;
+    box-shadow: none;
+    border: solid 1px #5bc7d3;
+}
+.dataTables_wrapper .dataTables_filter input:focus {
+    outline: none;
+}
+table.dataTable.no-footer {
+    margin-bottom: 1em;
+}
+table.dataTable thead th, table.dataTable thead td {
+    padding: 10px 10px!important;
+}
+.custom--1 {
+    padding: 0 5px;
+}
+.custom--2 {
+    margin-top: 15px;
+}
+
+.m-b-10px {
+    margin-bottom: 10px;
+}
+
+/* Family Tree Page */
+/* ====================== */
+
+.box-pencarian-family-tree {
+    padding: 20px;
+    background: #f2f6f9;
+    border: solid 1px #5cc7d2;
+    margin: 10px 0;
+}
+
+
+/* Global CSS */
+/* ====================== */
+
+.custom-select {
+    display: inline-block;
+    font: inherit;
+    padding: 0.5em 3.5em 0.5em 1em;
+    margin: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.custom-select {
+    background-image:
+    linear-gradient(45deg, transparent 50%, gray 50%),
+    linear-gradient(135deg, gray 50%, transparent 50%),
+    linear-gradient(to right, #ccc, #ccc);
+    background-position:
+    calc(100% - 20px) calc(1em + 2px),
+    calc(100% - 15px) calc(1em + 2px),
+    calc(100% - 2.5em) 0.4em;
+    background-size:
+    5px 5px,
+    5px 5px,
+    1px 1.5em;
+    background-repeat: no-repeat;
+}
+.form-control[readonly] {
+    touch-action: none;
+    pointer-events: none;
+}
+
+.btn-get-style-- {
+    border-radius: 50%/50%!important; font-size: 23px;
+}
+
+.page-header.navbar .page-logo .logo-default {
+    margin: 20px 0;
+    height: 33px;
+    width: auto;
+}
+.page-footer {
+    background: transparent!important;
+}
+
+li.nav-item.border-r-active {
+    border-right: solid 2px #5b9bd1;
+}
+
+.dataTables_wrapper .toolbar {
+    margin-bottom: 20px;
+}
+
+@media (min-width: 992px){
+    .page-content-wrapper .page-content {
+        padding: 0 0 0 20px;
+    }
+    .modal-xl { width: 1140px; }
+    .navbar-nav>li>a {
+        padding-top: 27px;
+        padding-bottom: 27px;
+    }
+}
+@media (max-width: 767px){ 
+    .logout-on-mobile {
+        position: absolute;
+        top: 0;
+        padding: 28px 10px;
+    }
+    .table-responsive.custom--2 #search-button {
+        width: 100%;
+    }
+    .table-responsive.custom--2 {
+        padding: 10px;
+    }
+}
+
+.table tbody tr td {
+    vertical-align: middle;
+}
+.custom-position-header {
+    position: absolute;
+    width: 80%;
+    z-index: 1;
+}
+
+.title-approval-apps {
+    margin: 0 auto 20px; text-align: center; border-bottom: solid 1px #5cc7d2; padding-bottom: 20px;
+}
+
+@media(max-width:767px) {
+    .custom-position-header {
+        position: relative;
+        width: unset;
+    }
+}
+
+#sliderapp {
+    margin-top: 12px;
+}
+#sliderapp .carousel-inner>.item>a>img, .carousel-inner>.item>img {
+    height: 300px;
+    width: 100%;
+    object-fit: cover;
+    object-position: top;
+}
+
+.loader {
+    position: fixed;
+    top: 0;
+    background: rgb(255 255 255 / .5);
+    bottom: 0;
+    left: 0;
+    z-index: 99999;
+    height: 100%;
+    width: 100%;
+}
+.loader-main {
+    color: #da8788;
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    font-size: 33px;
+}

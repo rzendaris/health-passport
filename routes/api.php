@@ -41,6 +41,7 @@ Route::group(['prefix' => 'v1'], function () {
 
             Route::post('spreadzone', 'API\v1\SpreadZoneController@index');
             Route::post('spreadzone/infra-list', 'API\v1\SpreadZoneController@spreadZoneInfraInfo');
+            Route::post('user/spreadzone', 'API\v1\SpreadZoneController@userSpreadzone');
 
             Route::get('submission', 'API\v1\SubmissionController@index');
             Route::post('submission', 'API\v1\SubmissionController@createSubmission');

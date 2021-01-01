@@ -53,6 +53,8 @@ class SubmissionController extends Controller
             'city' => 'required|string',
             'date' => 'required|date',
             'document' => 'required|mimes:jpeg,jpg,png|max:10000',
+            'body_temperature' => 'required|string',
+            'destination' => 'required|string',
         ]);
 
         $submission = new Submission([
@@ -61,6 +63,8 @@ class SubmissionController extends Controller
             'test_location' => $request->test_location,
             'city' => $request->city,
             'date' => $request->date,
+            'body_temperature' => $request->body_temperature,
+            'destination' => $request->destination,
             'identifier_id' => Str::uuid(),
             'status' => 'Not Verified',
             'exp_date' => Carbon::createFromFormat('Y-m-d', $request->date)->addDays(14)

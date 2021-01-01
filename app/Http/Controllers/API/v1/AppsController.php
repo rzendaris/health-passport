@@ -35,7 +35,8 @@ class AppsController extends Controller
         $mst_data = DB::select('CALL GetInfraByZone("'.$request->lat.'","'.$request->long.'","'.$request->search.'")');
         $responses = $mst_data;
         foreach($responses as $response){
-            $category = MstCategories::select('name')->where('id', $response->id)->first();
+            $response->certificates = InfraCertificate::where('infra_id', $response->id)->get();
+            $category = MstCategories::select('name')->where('id', $response->category_id)->first();
             $response->category_name = $category->name;
             $response->icon = 'infra/'.$response->icon;
             $response->spreadzone_status = 'GREEN_ZONE';
@@ -62,13 +63,12 @@ class AppsController extends Controller
         $return_response = array();
         foreach($mst_data as $response){
             if($response->id == $infra_id){
-                $category = MstCategories::select('name')->where('id', $response->id)->first();
+                $category = MstCategories::select('name')->where('id', $response->category_id)->first();
+                $response->certificates = InfraCertificate::where('infra_id', $response->id)->get();
                 $response->category_name = $category->name;
                 $response->images = json_decode($response->images);
                 $response->icon = 'infra/'.$response->icon;
                 $response->spreadzone_status = 'GREEN_ZONE';
-                $response->aries_status = 'PASSED';
-                $response->disinfectant_status = 'NOT_PASSED';
 
                 $spreadzones = DB::select('CALL GetSpreadZone("'.$response->latitude.'","'.$response->longitude.'")');
                 foreach($spreadzones as $spreadzone){
@@ -103,7 +103,9 @@ class AppsController extends Controller
         $mst_data = DB::select('CALL GetInfraByZone("'.$request->lat.'","'.$request->long.'","'.$request->search.'")');
         $responses = $mst_data;
         foreach($responses as $response){
-            $category = MstCategories::select('name')->where('id', $response->id)->first();
+            $category = MstCategories::select('name')->where('id', $response->category_id)->first();
+            $response->total_certificate = "0";
+            $response->certificates = InfraCertificate::where('infra_id', $response->id)->get();
             foreach($certificates as $certificate){
                 if($response->id == $certificate->infra_id){
                     $response->total_certificate = $certificate->total;
@@ -146,12 +148,14 @@ class AppsController extends Controller
         foreach($responses as $response){
             if((int)$response->category_id == $category_id){
                 $category = MstCategories::select('name')->where('id', $response->category_id)->first();
-                $response->total_certificate = 0;
+                $response->total_certificate = "0";
                 foreach($certificates as $certificate){
                     if($response->id == $certificate->infra_id){
                         $response->total_certificate = $certificate->total;
                     }
                 }
+
+                $response->certificates = InfraCertificate::where('infra_id', $response->id)->get();
                 $response->category_name = $category->name;
                 $response->icon = 'infra/'.$response->icon;
                 $response->spreadzone_status = 'GREEN_ZONE';
